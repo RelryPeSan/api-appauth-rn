@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const routes = require('./src/routes');
-const port = 3000;
+const port = process.env.PORT || 8080;
 
 const server = express();
 
