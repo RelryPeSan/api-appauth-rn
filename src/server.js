@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const routes = require('./routes');
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 3000;
 
 const server = express();
 
@@ -13,4 +13,4 @@ server.use(express.json());
 server.use(routes);
 
 server.listen(port);
-console.log(`Server rodando na porta ${port}`);
+console.log(`Server rodando na porta: ${port}`);

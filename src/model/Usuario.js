@@ -16,6 +16,16 @@ const UsuarioSchema = new Schema({
     stremail: {
         type: String,
         required: true,
+    },
+    strcpf: {
+        type: String,
+    },
+    dtmnascimento: {
+        type: Date,
+    },
+    blnativo: {
+        type: Boolean,
+        required: true,
     }
 }, {
     timestamps: true,

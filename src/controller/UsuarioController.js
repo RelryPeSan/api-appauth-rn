@@ -53,11 +53,23 @@ module.exports = {
         var response = null;
 
         try {
+            // verifica se já não existe um login ou email cadastrado
+            const existAccount = await Usuario.find({
+                $or: [
+                    {stremail},
+                    {strlogin}
+                ]
+            });
+            if(existAccount.length > 0){
+                return res.json({response, error: {message: 'Usuário já existente', existAccount} });
+            }
+
             response = await Usuario.create({
                 strnome,
                 strlogin,
                 strsenha,
                 stremail,
+                blnativo: true,
             })
         } catch (error) {
             return res.status(400).json({response, error});
