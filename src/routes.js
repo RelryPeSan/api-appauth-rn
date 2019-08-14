@@ -5,7 +5,7 @@ const routes = express.Router();
 
 
 routes.get('/', (req, res) => {
-    return res.json({response: 'success'});
+    return res.json({response: 'success', portNumber: (process.env.PORT || 8080)});
 });
 
 // Usuario
