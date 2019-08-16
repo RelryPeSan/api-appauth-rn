@@ -1,4 +1,5 @@
-const { Schema, model } = require('mongoose');
+const { Schema, model, plugin } = require('mongoose');
+const mongoosePaginate = require('mongoose-paginate');
 
 const UsuarioSchema = new Schema({
     strnome: {
@@ -30,5 +31,7 @@ const UsuarioSchema = new Schema({
 }, {
     timestamps: true,
 });
+
+UsuarioSchema.plugin(mongoosePaginate);
 
 module.exports = model('Usuario', UsuarioSchema);

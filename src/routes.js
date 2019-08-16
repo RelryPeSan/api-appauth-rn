@@ -11,7 +11,12 @@ routes.get('/', (req, res) => {
 // Usuario
 routes.get('/usuario/:usuarioId', UsuarioController.getById);
 routes.get('/usuario', UsuarioController.find);
-routes.get('/login/:login/:senha', UsuarioController.login);
+routes.get('/login', UsuarioController.login);
+routes.get('/login/:login/:senha', function(req, res) {
+    const { login, senha } = req.params;
+    console.log('Redirecionamento de rota...');
+    res.redirect(`/login?user=${login}&pass=${senha}`);
+});
 routes.post('/usuario', UsuarioController.create);
 
 module.exports = routes;

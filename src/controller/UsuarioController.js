@@ -1,5 +1,13 @@
 const Usuario = require('../model/Usuario');
 
+// index, show, store, update, destroy
+/*
+    index:      GET
+    show:       GET
+    store:      POST
+    update:     PUT
+    destroy:    DELETE
+ */
 module.exports = {
     async getById(req, res) {
         const { usuarioId } = req.params;
@@ -15,15 +23,19 @@ module.exports = {
     },
 
     async find(req, res) {
+        const { page = 1, limit = 10 } = req.query;
         const { strnome, strlogin, strsenha, stremail } = req.body;
         var response = null;
 
         try {
-            response = await Usuario.find({
+            response = await Usuario.paginate({
                 strnome: {$regex: new RegExp(strnome)},
                 strlogin: {$regex: new RegExp(strlogin)},
                 strsenha: {$regex: new RegExp(strsenha)},
                 stremail: {$regex: new RegExp(stremail)},
+            }, {
+                page: parseInt(page),
+                limit: parseInt(limit),
             });
         } catch (error) {
             return res.status(400).json({response, error});
@@ -33,13 +45,14 @@ module.exports = {
     },
 
     async login(req, res) {
-        const { login, senha } = req.params;
+        const { user, pass } = req.query;
         var response = null;
+        console.log({user, pass});
         
         try {
             response = await Usuario.findOne({
-                strlogin: login,
-                strsenha: senha,
+                strlogin: user,
+                strsenha: pass,
             });
         } catch (error) {
             return res.status(400).json({response, error});
