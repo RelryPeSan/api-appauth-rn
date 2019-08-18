@@ -1,19 +1,27 @@
 const express = require('express');
 const cors = require('cors');
-const mongoose = require('mongoose');
-const http = require('http');
+const mongodb = require('./middlewares/mongodb');
 const routes = require('./routes');
+const cFiles = require('./helpers/classFiles');
+
 const port = process.env.PORT || 3000;
 
-const server = express();
+const app = express();
+const server = require('http').Server(app);
+const socketio = require('socket.io')(server);
 
-mongoose.connect('mongodb+srv://reratos:6ZShBlYoF5Nuzegv@clusterreactnative-1d2gr.mongodb.net/appauth?retryWrites=true&w=majority', {
-    useNewUrlParser: true
-});
+socketio.on('connect', socket => {
+    console.log('Nova conexão', socket.id);
+})
 
-server.use(express.json());
-server.use(cors());
-server.use(routes);
+// configura e estabelece a conexão com o banco de dados
+mongodb.connection();
+
+app.use(express.json());
+app.use(cors());
+app.use(routes);
+
+cFiles.clearDir('./temp/images');
 
 server.listen(port, () => {
     console.log(`Server rodando na porta: ${port}`);
