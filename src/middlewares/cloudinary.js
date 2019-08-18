@@ -34,7 +34,7 @@ function uploadBuffer(req, res, next){
     }
 }
 
-function uploadImage(req, res, next){
+function uploadFile(req, res, next){
     console.info('Upload de arquivo em disco...');
     const { userid } = req.query;
 
@@ -67,13 +67,20 @@ function uploadImage(req, res, next){
 
 module.exports = {
     upload(req, res, next){
-        // uploadImage(req, res, next);
+        // uploadFile(req, res, next);
         uploadBuffer(req, res, next);
     },
 
     getById(req, res, next){
         console.log(req);
         res.json({error: 'Não implementado ainda.'});
+    },
+
+    clearFolder(req, res, next){
+        cloudinary.uploader.destroy()
+        console.log(req);
+        res.json({error: 'Não implementado ainda.'});
     }
+
 }
 

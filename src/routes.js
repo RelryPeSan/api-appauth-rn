@@ -14,8 +14,12 @@ routes.get('/', (req, res) => {
         response: 'success',
         portNumber: (process.env.PORT || 3000),
         version: '0.5.1',
+        cpu: {
+            model: CPUs[0].model,
+            speed: CPUs[0].speed,
+            cores: CPUs.length,
+        },
         cluster,
-        CPUs,
     });
 });
 
@@ -36,7 +40,12 @@ routes.post('/usuario/imagem', multer.single('image'), (req, res) => {
             if(err){
                 return res.send(err);
             } else {
-                return res.json(image);
+                // configura o body para conter o link da imagem
+                req.body = {
+                    strfotoperfil: image.secure_url,
+                }
+                
+                UsuarioController.update(req, res);
             }
         });
     } else {

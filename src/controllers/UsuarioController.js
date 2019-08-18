@@ -61,7 +61,7 @@ module.exports = {
     },
 
     async create(req, res) {
-        const { strnome, strlogin, strsenha, stremail } = req.body;
+        const { strnome, strlogin, strsenha, stremail, strfotoperfil } = req.body;
         var response = null;
 
         try {
@@ -81,6 +81,7 @@ module.exports = {
                 strlogin,
                 strsenha,
                 stremail,
+                strfotoperfil,
                 blnativo: true,
             })
         } catch (error) {
@@ -91,7 +92,24 @@ module.exports = {
     },
 
     update(req, res) {
-        res.json({error: 'Não implementado ainda.'});
+        const { userid } = req.query;
+        const body = req.body;
+
+        const condicao = { _id: userid };
+        const novosValores = { $set: body };
+
+        console.log({condicao, novosValores});
+
+        Usuario.updateOne(condicao, novosValores, (err, raw) => {
+            if(err){
+                console.log(new Error(`Não foi possivel atualizar`));
+                res.json(err);
+            } else {
+                console.log(`Upload com sucesso.`);
+                res.json(body);
+            }
+        });
+        // res.json({error: 'Não implementado ainda.'});
     },
 
     destroy(req, res) {

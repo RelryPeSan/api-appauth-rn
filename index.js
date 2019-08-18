@@ -1,4 +1,6 @@
-//iniciar pelo index para não realizar impressão de console
+//configura o console.log para não realizar impressões no servidor
 console.log = function(){};
+
+
 
 require('./src/server');

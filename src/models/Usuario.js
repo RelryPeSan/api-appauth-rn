@@ -24,6 +24,9 @@ const UsuarioSchema = new Schema({
     dtmnascimento: {
         type: Date,
     },
+    strfotoperfil: {
+        type: String,
+    },
     blnativo: {
         type: Boolean,
         required: true,

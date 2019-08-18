@@ -18,11 +18,11 @@ const storeMemory =(multer({
         // O formato do arquivo bateu com algum aceito?
         if(isAccepted){
             // Executamos o callback com o segundo argumento true (validação aceita)
-            return cb(null, true);
+            cb(null, true);
         }
         
         // Se o arquivo não bateu com nenhum aceito, executamos o callback com o segundo valor false (validação falhouo)
-        return cb(null, false);
+        cb(null, false);
     }
 }));
 
@@ -46,7 +46,7 @@ const storeDisk = (multer({
             const tipo = file.mimetype.substring(file.mimetype.indexOf('/') + 1);
             
             if(userid === undefined){
-                return cb(null, false);
+                cb(null, false);
             }
           
             // Setamos o nome do arquivo que vai ser salvado no segundo paramêtro
@@ -66,11 +66,11 @@ const storeDisk = (multer({
         // O formato do arquivo bateu com algum aceito?
         if(isAccepted){
             // Executamos o callback com o segundo argumento true (validação aceita)
-            return cb(null, true);
+            cb(null, true);
         }
         
         // Se o arquivo não bateu com nenhum aceito, executamos o callback com o segundo valor false (validação falhouo)
-        return cb(null, false);
+        cb(null, false);
     }
 }));
 
