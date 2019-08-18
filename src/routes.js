@@ -8,7 +8,11 @@ const routes = express.Router();
 
 
 routes.get('/', (req, res) => {
-    return res.json({response: 'success', portNumber: (process.env.PORT || 3000)});
+    return res.json({
+        response: 'success',
+        portNumber: (process.env.PORT || 3000),
+        version: '0.5.1',
+    });
 });
 
 // Usuario
