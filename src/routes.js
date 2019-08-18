@@ -3,6 +3,8 @@ const UsuarioController = require('./controllers/UsuarioController');
 const ImagemController = require('./controllers/ImagemController');
 const multer = require('./middlewares/multer');
 const cloudinary = require('./middlewares/cloudinary');
+const cluster = require('cluster');
+const CPUs = require('os').cpus();
 
 const routes = express.Router();
 
@@ -12,6 +14,8 @@ routes.get('/', (req, res) => {
         response: 'success',
         portNumber: (process.env.PORT || 3000),
         version: '0.5.1',
+        cluster,
+        CPUs,
     });
 });
 
