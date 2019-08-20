@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const mongodb = require('./middlewares/mongodb');
 const routes = require('./routes');
-const cFiles = require('./helpers/classFiles');
+// const cFiles = require('./helpers/classFiles');
 
 const port = process.env.PORT || 3000;
 
@@ -21,7 +21,7 @@ app.use(express.json());
 app.use(cors());
 app.use(routes);
 
-cFiles.clearDir('./temp/images');
+// cFiles.clearDir('./temp/images');
 
 server.listen(port, () => {
     console.log(`Server rodando na porta: ${port}`);

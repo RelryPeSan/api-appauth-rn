@@ -20,17 +20,24 @@ const UsuarioSchema = new Schema({
     },
     strcpf: {
         type: String,
+        default: null,
     },
     dtmnascimento: {
         type: Date,
+        default: null,
     },
     strfotoperfil: {
         type: String,
+        default: null,
     },
-    blnativo: {
+    blncontaativada: {
         type: Boolean,
         required: true,
-    }
+    },
+    blnemailconfirmado: {
+        type: Boolean,
+        required: true,
+    },
 }, {
     timestamps: true,
 });

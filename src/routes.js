@@ -1,6 +1,8 @@
 const express = require('express');
 const UsuarioController = require('./controllers/UsuarioController');
 const ImagemController = require('./controllers/ImagemController');
+const VerificacaoEmail = require('./controllers/VerificacaoEmailController');
+
 const multer = require('./middlewares/multer');
 const cloudinary = require('./middlewares/cloudinary');
 const cluster = require('cluster');
@@ -57,6 +59,9 @@ routes.post('/usuario/imagem', multer.single('image'), (req, res) => {
 
 // Login - Autenticação
 routes.get('/login', UsuarioController.login);
+
+// Email
+routes.put('/validaremail', VerificacaoEmail.verificarCodigo);
 
 
 module.exports = routes;

@@ -8,23 +8,25 @@ cloudinary.config({
     api_secret: '3pWuKOi0B2axHo2_bfPMh_abOxU'
 })
 
+// função para upload da imagem armazenada em buffer
 function uploadBuffer(req, res, next){
-    console.info('Upload de arquivo em buffer...');
+    // console.info('Upload de arquivo em buffer...');
     const { userid } = req.query;
     const file = req.file;
 
     if(file.buffer){
-        const tipo = file.mimetype.substring(file.mimetype.indexOf('/') + 1);
+        // const tipo = file.mimetype.substring(file.mimetype.indexOf('/') + 1);
         const imgname = userid + '-' + Date.now().toString();
     
+        // função para enviar a imgem armazenada em buffer para a nuvem
         cloudinary.uploader.upload_stream({
             public_id: `${BASE_PATH}/${userid}/${imgname}`,
         }, (error, result) => {
             if (error) {
-                console.error('Falha no upload do arquivo.');
+                // console.error('Falha no upload do arquivo.');
                 next(error, result);
             } else {
-                console.info('Sucesso no upload do arquivo.');
+                // console.info('Sucesso no upload do arquivo.');
                 next(null, result);
             }
         }).end(file.buffer);
@@ -72,13 +74,14 @@ module.exports = {
     },
 
     getById(req, res, next){
-        console.log(req);
+        // console.log(req);
+        // cloudinary.image();
         res.json({error: 'Não implementado ainda.'});
     },
 
     clearFolder(req, res, next){
-        cloudinary.uploader.destroy()
-        console.log(req);
+        // cloudinary.uploader.destroy()
+        // console.log(req);
         res.json({error: 'Não implementado ainda.'});
     }
 

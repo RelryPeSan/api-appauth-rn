@@ -1,4 +1,5 @@
 const Usuario = require('../models/Usuario');
+const Utils = require('../controllers/Utils');
 
 // index, show, store, update, destroy
 /*
@@ -66,14 +67,12 @@ module.exports = {
 
         try {
             // verifica se já não existe um login ou email cadastrado
-            const existAccount = await Usuario.find({
-                $or: [
-                    {stremail},
-                    {strlogin}
-                ]
-            });
-            if(existAccount.length > 0){
-                return res.json({response, error: {message: 'Usuário já existente', existAccount} });
+            const existEmail = (await Usuario.findOne({stremail}) ? true : false);
+            const existLogin = (await Usuario.findOne({strlogin}) ? true : false);
+
+            if(existEmail || existLogin){
+                console.warn('Usuário já possui um login ou email repetido.');
+                return res.json({response, error: {message: 'Usuário já existente', existEmail, existLogin} });
             }
 
             response = await Usuario.create({
@@ -82,8 +81,16 @@ module.exports = {
                 strsenha,
                 stremail,
                 strfotoperfil,
-                blnativo: true,
-            })
+                blncontaativada: true,
+                blnemailconfirmado: false,
+            });
+            
+            Utils.gerarCodigoVerificacaoEmail(response._id, stremail, (err, res) => {
+                if(err) {
+                    return res.status(400).json({response, err});
+                }
+            });
+            
         } catch (error) {
             return res.status(400).json({response, error});
         }
@@ -97,8 +104,6 @@ module.exports = {
 
         const condicao = { _id: userid };
         const novosValores = { $set: body };
-
-        console.log({condicao, novosValores});
 
         Usuario.updateOne(condicao, novosValores, (err, raw) => {
             if(err){
