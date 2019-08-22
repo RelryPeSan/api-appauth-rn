@@ -17,7 +17,7 @@ routes.get('/', (req, res) => {
     return res.json({
         response: 'success',
         portNumber: (process.env.PORT || 3000),
-        version: '0.5.1',
+        version: '0.5.3',
         cpu: {
             model: CPUs[0].model,
             speed: CPUs[0].speed,
