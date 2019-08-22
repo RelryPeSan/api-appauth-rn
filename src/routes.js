@@ -2,6 +2,8 @@ const express = require('express');
 const UsuarioController = require('./controllers/UsuarioController');
 const ImagemController = require('./controllers/ImagemController');
 const VerificacaoEmail = require('./controllers/VerificacaoEmailController');
+const PostagemController = require('./controllers/PostagemController');
+const AmizadeController = require('./controllers/AmizadeController');
 
 const multer = require('./middlewares/multer');
 const cloudinary = require('./middlewares/cloudinary');
@@ -10,7 +12,7 @@ const CPUs = require('os').cpus();
 
 const routes = express.Router();
 
-
+// Tester
 routes.get('/', (req, res) => {
     return res.json({
         response: 'success',
@@ -63,5 +65,16 @@ routes.get('/login', UsuarioController.login);
 // Email
 routes.put('/validaremail', VerificacaoEmail.verificarCodigo);
 
+// Amizade
+routes.get('/amizade/:userId', AmizadeController.listarAmizades);
+routes.post('/amizade', AmizadeController.enviarSolicitacaoAmizade);
+routes.delete('/amizade', AmizadeController.desfazerAmizade);
+
+// Postagem
+routes.get('/postagem/:userId', PostagemController.getById);
+routes.get('/postagem', PostagemController.listarPostagensDeAmizadesOrdenadaPorDataDecrescente);
+routes.post('/postagem', PostagemController.criarPostagem);
+routes.put('/postagem', PostagemController.editarPostagem);
+routes.delete('/postagem', PostagemController.removerPostagem);
 
 module.exports = routes;

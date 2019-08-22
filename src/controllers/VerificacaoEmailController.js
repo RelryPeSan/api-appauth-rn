@@ -4,7 +4,11 @@ const UsuarioController = require('./UsuarioController');
 
 module.exports = {
     criarCodigo(req, res){
-
+        Utils.gerarCodigoVerificacaoEmail(response._id, stremail, (err, res) => {
+            if(err) {
+                return res.status(400).json({response, err});
+            }
+        });
     },
 
     verificarCodigo(req, res){

@@ -47,18 +47,38 @@ module.exports = {
 
     async login(req, res) {
         const { user, pass } = req.query;
-        var response = null;
+        // var response = null;
         
         try {
-            response = await Usuario.findOne({
-                strlogin: user,
-                strsenha: pass,
+            // response = await Usuario.findOne({
+            //     strlogin: user,
+            //     strsenha: pass,
+            // });
+            Usuario.findOne({strlogin: user, strsenha: pass}, (error, doc) => {
+                if(error) return res.status(400).json({error, response: null});
+
+                if(doc) {
+                    if(!doc.blncontaativada || !doc.blnemailconfirmado){
+                        // retorna quais dados pendentes e o ID do usuario
+                        return res.json({
+                            response: {
+                                _id: doc._id,
+                                blncontaativada: doc.blncontaativada,
+                                blnemailconfirmado: doc.blnemailconfirmado,
+                            }
+                        });
+                    }
+
+                    return res.json({error: null, response: doc});
+                } else {
+                    return res.json({error: "Não teve retorno de Usuario", response: doc});
+                }
             });
         } catch (error) {
             return res.status(400).json({response, error});
         }
         
-        return res.json({response, error: null});
+        // return res.json({response, error: null});
     },
 
     async create(req, res) {
@@ -80,16 +100,13 @@ module.exports = {
                 strlogin,
                 strsenha,
                 stremail,
-                strfotoperfil,
-                blncontaativada: true,
-                blnemailconfirmado: false,
             });
-            
+            // envia codigo de ativação para o email
             Utils.gerarCodigoVerificacaoEmail(response._id, stremail, (err, res) => {
                 if(err) {
                     return res.status(400).json({response, err});
                 }
-            });
+            });//*/
             
         } catch (error) {
             return res.status(400).json({response, error});
@@ -108,10 +125,10 @@ module.exports = {
         Usuario.updateOne(condicao, novosValores, (err, raw) => {
             if(err){
                 console.log(new Error(`Não foi possivel atualizar`));
-                res.json(err);
+                res.json({body: null, err});
             } else {
-                console.log(`Upload com sucesso.`);
-                res.json(body);
+                console.log(`Update com sucesso.`);
+                res.json({body, raw});
             }
         });
         // res.json({error: 'Não implementado ainda.'});
