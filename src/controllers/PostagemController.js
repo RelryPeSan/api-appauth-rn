@@ -1,133 +1,181 @@
-const Usuario = require('../models/Usuario');
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
+import Usuario from '../models/Usuario';
 
-function getIndexById(array, id){
-    var objID = mongoose.Types.ObjectId(id);
+function getIndexById(array, id) {
+  const objID = mongoose.Types.ObjectId(id);
 
-    for(i = 0; array[i] !== undefined; i++){
-        if(objID.equals(array[i]._id)){
-            return i;
-        }
+  for (let i = 0; array[i] !== undefined; i++) {
+    if (objID.equals(array[i]._id)) {
+      return i;
     }
+  }
 
-    return null;
+  return null;
 }
 
 module.exports = {
-    getById(req, res) {
-        res.json({error: 'Não implementado ainda.'});
-    },
+  getById(req, res) {
+    res.json({ error: 'Não implementado ainda.' });
+  },
 
-    listarPostagensDeAmizadesOrdenadaPorDataDecrescente(req, res) {
-        const { userid } = req.query;
+  async listarPostagensDeAmizadesOrdenadaPorDataDecrescente(req, res) {
+    const { userid } = req.query;
 
-        console.log(userid);
-        Usuario.findById(userid, (err, doc) => {
-            if (err) return res.json({err});
+    await Usuario.findById(userid, async (err, doc) => {
+      if (err) return res.json({ err });
 
-            if(doc){
-                const amigos = new Array(doc.arramigos);
-                const posts = new Array();
-                console.log('Amigos: ' + amigos.toString());
-                
-                amigos.map(function(id, index, arr){
-                    Usuario.findById(id, (err, doc) => {
-                        if(err) return;
+      if (doc) {
+        const amigos = [];
 
-                        if(doc)
-                            posts.push(doc.arrpostagens);
+        // cria uma array de ID do MongoDB das pessoas que o usuario segue
+        for (let x = 0; doc.arramigos[x] !== undefined; x++) {
+          amigos.push(mongoose.Types.ObjectId(doc.arramigos[x]._id));
+        }
 
-                        return;
-                    });
+        // busca o array de ID's, devolve um array de documentos(pessoas)
+        await Usuario.find(
+          {
+            _id: { $in: amigos },
+          },
+          async (error, docs) => {
+            if (error) return;
+
+            const posts = [];
+
+            for (let x = 0; docs[x] !== undefined; x++) {
+              const amigo = docs[x];
+
+              for (let i = 0; amigo.arrpostagens[i] !== undefined; i++) {
+                posts.push({
+                  userid: amigo._id,
+                  userfoto: amigo.strfotoperfil,
+                  usernome: amigo.strnome,
+                  postid: amigo.arrpostagens[i]._id,
+                  posttexto: amigo.arrpostagens[i].strmensagem,
+                  postdata: amigo.arrpostagens[i].createdAt,
                 });
-
-                console.log('Timeline: ' + posts);
-                return res.json({posts});
-            } else {
-                return res.json({err, doc});
+              }
             }
-        })
-        //res.json({error: 'Não implementado ainda.'});
-    },
 
-    criarPostagem(req, res) {
-        const { userid } = req.query;
-        const { texto } = req.body;
+            // ordena a postagens por data de criação
+            posts.sort((a, b) => {
+              if (a.postdata < b.postdata) {
+                return 1;
+              }
+              if (a.postdata > b.postdata) {
+                return -1;
+              }
+              return 0;
+            });
 
-        Usuario.findById(userid, (err, doc) => {
-            if(err){
-                return res.json(err);
-            } else {
+            return res.json({ posts });
+          }
+        );
 
-                // realiza unshift para adicionar a nova postagem no inicio do aray do doumento
-                doc.arrpostagens.unshift({strmensagem: texto});
-                doc.save((err, ret) => {
-                    if(err){
-                        return res.json(err);
-                    } else {
-                        return res.json(ret);
-                    }
-                });
+        // return res.json({ posts });
+      }
+
+      // return res.json({ err, doc });
+    });
+    // res.json({error: 'Não implementado ainda.'});
+  },
+
+  criarPostagem(req, res) {
+    const { userid } = req.query;
+    const { texto } = req.body;
+
+    try {
+      Usuario.findById(userid, (err, doc) => {
+        if (err) {
+          return res.json(err);
+        }
+
+        if (doc) {
+          // realiza unshift para adicionar a nova postagem no inicio do aray do doumento
+          doc.arrpostagens.unshift({ strmensagem: texto });
+          doc.save((err, ret) => {
+            if (err) {
+              return res.json(err);
             }
-        });
-    },
-    
-    editarPostagem(req, res) {
-        const { userid, postagemid } = req.query;
-        const { texto } = req.body;
-
-        Usuario.findById(userid, (err, doc) => {
-            if(err){
-                return res.json(err);
-            } else {
-                
-                // busca no banco o index do array da postagem do usuario
-                const retIndex = getIndexById(doc.arrpostagens, postagemid);
-
-                // se retornar um index, será possivel modifica-lo
-                if(retIndex !== null){
-
-                    // passamos o valor do _id e createAt novamente para que não seja gerado um novo
-                    doc.arrpostagens.set(retIndex, {
-                        _id: doc.arrpostagens[retIndex]._id,
-                        strmensagem: texto,
-                        createdAt: doc.arrpostagens[retIndex].createdAt,
-                    });
-
-                    // salva a alteração no banco
-                    doc.save((err, ret) => {
-                        if(err){
-                            return res.json(err);
-                        } else {
-                            return res.json(ret);
-                        }
-                    });
-                } else {
-                    return res.json({error: 'Não foi possivel identificar o index desta postagem.', postagemid});
-                }
-            }
-        });
-
-        return res.json({error: 'Sem resposta'});
-    },
-
-    removerPostagem(req, res) {
-        const { userid, postagemid } = req.query;
-
-        Usuario.findById(userid, (err, doc) => {
-            if(err){
-                return res.json(err);
-            } else {
-                doc.arrpostagens.remove(postagemid);
-                
-                doc.save((err, ret) => {
-                    if(err){
-                        return res.json(err);
-                    } else {
-                        return res.json(ret);
-                    }
-                });
-            }
-        });
+            return res.status(201).json(ret);
+          });
+        } else {
+          return res.json({
+            doc,
+            mensagem: 'Não teve retorno com o id informado',
+            userid,
+          });
+        }
+      });
+    } catch (error) {
+      return res.json(error);
     }
-}
+  },
+
+  editarPostagem(req, res) {
+    const { userid, postagemid } = req.query;
+    const { texto } = req.body;
+
+    try {
+      Usuario.findById(userid, (err, doc) => {
+        if (err) {
+          return res.json(err);
+        }
+
+        if (doc) {
+          // busca no banco o index do array da postagem do usuario
+          const retIndex = getIndexById(doc.arrpostagens, postagemid);
+
+          // se retornar um index, será possivel modifica-lo
+          if (retIndex !== null) {
+            // passamos o valor do _id e createAt novamente para que não seja gerado um novo
+            doc.arrpostagens.set(retIndex, {
+              _id: doc.arrpostagens[retIndex]._id,
+              strmensagem: texto,
+              createdAt: doc.arrpostagens[retIndex].createdAt,
+            });
+
+            // salva a alteração no banco
+            doc.save((err, ret) => {
+              if (err) {
+                return res.json(err);
+              }
+              return res.json(ret);
+            });
+          } else {
+            return res.json({
+              error: 'Não foi possivel identificar o index desta postagem.',
+              postagemid,
+            });
+          }
+        } else {
+          return res.json({
+            doc,
+            mensagem: 'Não teve retorno com o id informado',
+            userid,
+          });
+        }
+      });
+    } catch (error) {
+      return res.json({ error: 'Sem resposta' });
+    }
+  },
+
+  removerPostagem(req, res) {
+    const { userid, postagemid } = req.query;
+
+    Usuario.findById(userid, (err, doc) => {
+      if (err) {
+        return res.json(err);
+      }
+      doc.arrpostagens.remove(postagemid);
+
+      doc.save((err, ret) => {
+        if (err) {
+          return res.json(err);
+        }
+        return res.json(ret);
+      });
+    });
+  },
+};
