@@ -6,7 +6,7 @@
   "scripts": {
     "api": "nodemon src/server.js",
     "dev": "node --inspect src/server.js",
-    "start": "node src/server.js"
+    "start": "nodemon src/server.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
