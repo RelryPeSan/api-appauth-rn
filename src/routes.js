@@ -1,32 +1,33 @@
-const express = require('express');
+import express from 'express';
 
-const cluster = require('cluster');
-const CPUs = require('os').cpus();
-const multer = require('./middlewares/multer');
-const cloudinary = require('./middlewares/cloudinary');
+import cluster from 'cluster';
+import { cpus } from 'os';
+import multer from './middlewares/multer';
+import cloudinary from './middlewares/cloudinary';
 
-const UsuarioController = require('./controllers/UsuarioController');
-const ImagemController = require('./controllers/ImagemController');
-const VerificacaoEmail = require('./controllers/VerificacaoEmailController');
-const PostagemController = require('./controllers/PostagemController');
-const AmizadeController = require('./controllers/AmizadeController');
+import UsuarioController from './controllers/UsuarioController';
+import ImagemController from './controllers/ImagemController';
+import VerificacaoEmail from './controllers/VerificacaoEmailController';
+import PostagemController from './controllers/PostagemController';
+import AmizadeController from './controllers/AmizadeController';
 
 const routes = express.Router();
 
 // Tester
-routes.get('/', (req, res) =>
+routes.get('/', (req, res) => {
+  const CpuInfo = cpus();
   res.json({
     response: 'success',
     portNumber: process.env.PORT || 3000,
     version: '0.5.3',
     cpu: {
-      model: CPUs[0].model,
-      speed: CPUs[0].speed,
-      cores: CPUs.length,
+      model: CpuInfo[0].model,
+      speed: CpuInfo[0].speed,
+      cores: CpuInfo.length,
     },
     cluster,
-  })
-);
+  });
+});
 
 // Usuario
 routes.get('/usuario/:usuarioId', UsuarioController.getById);
@@ -51,12 +52,15 @@ routes.post('/usuario/imagem', multer.single('image'), (req, res) => {
       };
 
       UsuarioController.update(req, res);
+
+      return 0; // verificar se este return não afetará
     });
   } else {
     console.log('Não foi possivel concluir o upload!!!');
     // Se o objeto req.file for undefined, ou seja, não houve sucesso, vamos imprimir um erro!
     return res.json({ error: 'Houve erro no upload!' });
   }
+  return 0; // verificar se este return não afetará
 });
 
 // Login - Autenticação
